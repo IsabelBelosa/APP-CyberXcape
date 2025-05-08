@@ -10,11 +10,6 @@ import androidx.compose.ui.unit.sp
 import com.example.cyberxcape.ui.theme.*
 
 @Composable
-fun PantallaSalas() {
-    PantallaGenerica("Salas")
-}
-
-@Composable
 fun PantallaReservas() {
     PantallaGenerica("Gestión de Reservas")
 }

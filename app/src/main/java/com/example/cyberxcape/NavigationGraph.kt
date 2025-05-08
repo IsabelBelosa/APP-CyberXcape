@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 fun NavigationGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "inicio") {
         composable("inicio") { PantallaInicio(navController) }
-        composable("salas") { PantallaSalas() }
+        composable("salas") { PantallaSalas(navController) }
         composable("reservas") { PantallaReservas() }
         composable("localizacion") { PantallaLocalizacion() }
     }

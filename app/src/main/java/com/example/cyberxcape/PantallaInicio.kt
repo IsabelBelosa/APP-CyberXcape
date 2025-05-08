@@ -172,7 +172,7 @@ fun PantallaInicio(navController: NavHostController) {
                     .padding(paddingValues)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.neutralhack),
+                    painter = painterResource(id = R.drawable.sala_a),
                     contentDescription = "Fondo de la app",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
