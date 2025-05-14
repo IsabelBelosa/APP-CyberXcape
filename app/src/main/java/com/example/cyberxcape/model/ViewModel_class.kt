@@ -4,91 +4,92 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import java.util.*
 
-// Esta clase manejará el estado del formulario.
 class ViewModel_class : ViewModel() {
-    // Estado que mantiene los datos del formulario.
+
     private val _uiState = MutableStateFlow(ViewModel_form())
     val uiState: StateFlow<ViewModel_form> = _uiState
 
-    // Funciones que actualizan el estado del formulario con cada cambio.
-
-    fun onNombreChange(nombre: String) {
-        _uiState.value = _uiState.value.copy(nombre = nombre)
+    fun onNombreChange(nuevoNombre: String) {
+        _uiState.update { it.copy(nombre = nuevoNombre) }
     }
 
-    fun onApellidosChange(apellidos: String) {
-        _uiState.value = _uiState.value.copy(apellidos = apellidos)
+    fun onApellidosChange(nuevosApellidos: String) {
+        _uiState.update { it.copy(apellidos = nuevosApellidos) }
     }
 
-    fun onTelefonoChange(telefono: String) {
-        _uiState.value = _uiState.value.copy(telefono = telefono)
+    fun onTelefonoChange(nuevoTelefono: String) {
+        _uiState.update { it.copy(telefono = nuevoTelefono) }
     }
 
-    fun onSocioChange(socio: String) {
-        _uiState.value = _uiState.value.copy(socio = socio)
+    fun onNumeroSocioChange(nuevoNumeroSocio: String) {
+        _uiState.update { it.copy(numeroSocio = nuevoNumeroSocio) }
     }
 
-    fun onEmailChange(email: String) {
-        _uiState.value = _uiState.value.copy(email = email)
+    fun onEmailChange(nuevoEmail: String) {
+        _uiState.update { it.copy(email = nuevoEmail) }
     }
 
-    fun onJugadoresChange(jugadores: String) {
-        _uiState.value = _uiState.value.copy(jugadores = jugadores)
+    fun onNumeroJugadoresChange(nuevoNumeroJugadores: String) {
+        _uiState.update { it.copy(numeroJugadores = nuevoNumeroJugadores) }
     }
 
     fun onSalaChange(sala: String) {
-        _uiState.value = _uiState.value.copy(sala = sala)
+        _uiState.update { it.copy(sala = sala) }
     }
 
     fun onDificultadChange(dificultad: String) {
-        _uiState.value = _uiState.value.copy(dificultad = dificultad)
+        _uiState.update { it.copy(dificultad = dificultad) }
     }
 
-    fun onFechaChange(fecha: String) {
-        _uiState.value = _uiState.value.copy(fecha = fecha)
+    fun onFechaChange(fecha: Date) {
+        _uiState.update { it.copy(fecha = fecha) }
     }
 
-    fun onHoraInicioChange(hora: String) {
-        _uiState.value = _uiState.value.copy(hora = hora)
+    fun onHoraInicioChange(horaInicio: String) {
+        _uiState.update { it.copy(horaInicio = horaInicio) }
     }
 
     fun onHoraFinChange(horaFin: String) {
-        _uiState.value = _uiState.value.copy(horaFin = horaFin) // Actualizamos horaFin
+        _uiState.update { it.copy(horaFin = horaFin) }
     }
 
-    fun onComentarioChange(comentario: String) {
-        _uiState.value = _uiState.value.copy(comentario = comentario)
+    fun onComentariosChange(comentarios: String) {
+        _uiState.update { it.copy(comentarios = comentarios) }
     }
 
-    // Función que valida los datos y los envía
+    // Funciones para actualizar la expansión de los dropdowns
+    fun onSalaChange(expanded: Boolean) {
+        _uiState.update { it.copy(salaExpanded = expanded) }
+    }
+
+    fun onDificultadChange(expanded: Boolean) {
+        _uiState.update { it.copy(dificultadExpanded = expanded) }
+    }
 
     fun validarYEnviar() {
         val state = _uiState.value
-        val emailRegex = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
 
-        when {
-            state.nombre.isBlank() -> setError("El nombre es obligatorio")
-            state.apellidos.isBlank() -> setError("Los apellidos son obligatorios")
-            state.socio.length < 8 -> setError("El número de socio debe tener al menos 8 caracteres")
-            !emailRegex.matches(state.email) -> setError("El email no tiene un formato válido")
-            else -> {
-                _uiState.update {
-                    it.copy(errorMensaje = null, envioExitoso = true)
-                }
+        if (state.nombre.isBlank()) setError("El nombre es obligatorio")
+        else if (state.apellidos.isBlank()) setError("Los apellidos son obligatorios")
+        else if (state.telefono.isBlank()) setError("El teléfono es obligatorio")
+        else if (state.numeroSocio.isBlank()) setError("El número de socio es obligatorio")
+        else if (state.email.isBlank()) setError("El email es obligatorio")
+        else if (state.numeroJugadores.isBlank()) setError("El número de jugadores es obligatorio")
+        else if (state.sala.isBlank()) setError("La sala es obligatoria")
+        else if (state.dificultad.isBlank()) setError("La dificultad es obligatoria")
+        else if (state.fecha == null) setError("La fecha es obligatoria")
+        else if (state.horaInicio.isBlank()) setError("La hora de inicio es obligatoria")
+        else if (state.horaFin.isBlank()) setError("La hora de fin es obligatoria")
+        else {
+            _uiState.update {
+                it.copy(errorMensaje = null, envioExitoso = true)
             }
-
         }
     }
 
     private fun setError(mensaje: String) {
         _uiState.update { it.copy(errorMensaje = mensaje, envioExitoso = false) }
     }
-
 }
-
-// Tenemos una UI reactiva: cuando el usuario escribe algo,
-// la función correspondiente se llama y actualiza el estado.
-
-// Gracias a StateFlow, la UI que observe uiState se volverá a componer
-// automáticamente con los nuevos datos.

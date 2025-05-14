@@ -2,14 +2,15 @@ package com.example.cyberxcape
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
@@ -28,25 +29,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.cyberxcape.ui.theme.Blanco
-import com.example.cyberxcape.ui.theme.Negro
-import com.example.cyberxcape.ui.theme.Rojo
-import com.example.cyberxcape.ui.theme.Rosa
+import com.example.cyberxcape.ui.theme.*
 import com.example.cyberxcape.model.ViewModel_class
-import java.util.Calendar
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.DropdownMenuItem
+import java.util.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
-import com.example.cyberxcape.ui.theme.Gris
-import com.example.cyberxcape.ui.theme.pressStart2P
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 
-
-@SuppressLint("DefaultLocale")
+@SuppressLint("DefaultLocale", "SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostController) {
@@ -54,312 +48,251 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
     val context = LocalContext.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
-    var selectedItem by remember { mutableStateOf("salas") }
-
-    val showTimePickerStart = remember { mutableStateOf(false) }
-    val showTimePickerEnd = remember { mutableStateOf(false) }
-    val showDatePicker = remember { mutableStateOf(false) }
-    val showTimePicker = remember { mutableStateOf(false) }
-
-    val scrollState = rememberScrollState()
-
-    var expandedSala by remember { mutableStateOf(false) }
-    var expandedDificultad by remember { mutableStateOf(false) }
-
-    val salas = listOf("Sala A", "Sala B", "Sala C")
-    val dificultades = listOf("Fácil", "Media", "Difícil")
+    var selectedItem by remember { mutableStateOf("reservas") }
 
 
+    // Dropdown states
+    var salaExpanded by remember { mutableStateOf(false) }
+    var difExpanded by remember { mutableStateOf(false) }
+    val salaOptions = listOf("Neutral Hack", "Estación Omega", "Experimento-33")
+    val difOptions = listOf("Fácil", "Normal", "Difícil")
+
+    // Date picker state
+    val selectedDate = remember { mutableStateOf(Date()) }
+    val datePickerDialog = remember {
+        DatePickerDialog(context).apply {
+            setOnDateSetListener { _, year, month, dayOfMonth ->
+                val calendar = Calendar.getInstance().apply { set(year, month, dayOfMonth) }
+                selectedDate.value = calendar.time
+                viewModel.onFechaChange(calendar.time)
+            }
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        drawerContent = { ModalDrawerSheet(
-            Modifier
-                .fillMaxHeight()
-                .width(250.dp),
-            drawerContainerColor = Negro
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
+        drawerContent = {
+            ModalDrawerSheet(
+                Modifier
+                    .fillMaxHeight()
+                    .width(250.dp),
+                drawerContainerColor = Negro
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            val items = listOf(
-                NavigationItem("Inicio", "inicio", Icons.Filled.Home, Icons.Outlined.Home),
-                NavigationItem("Salas", "salas", Icons.Filled.Lock, Icons.Outlined.Lock),
-                NavigationItem("Gestionar Reservas", "reservas", Icons.Filled.Info, Icons.Outlined.Info),
-                NavigationItem("Localización", "localizacion", Icons.Filled.LocationOn, Icons.Outlined.LocationOn)
-            )
-
-            items.forEach { item ->
-                NavigationDrawerItem(
-                    label = {
-                        Text(
-                            text = item.title,
-                            fontSize = 16.sp,
-                            fontWeight = if (item.route == selectedItem) FontWeight.Bold else FontWeight.Normal,
-                            color = Blanco
-                        )
-                    },
-                    selected = item.route == selectedItem,
-                    onClick = {
-                        selectedItem = item.route
-                        coroutineScope.launch { drawerState.close() }
-                        navController.navigate(item.route)
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = if (item.route == selectedItem) item.selectedIcon else item.unselectedIcon,
-                            contentDescription = item.title,
-                        )
-                    },
-                    colors = NavigationDrawerItemDefaults.colors(
-                        selectedContainerColor = Rosa.copy(alpha = 0.2f),
-                        unselectedContainerColor = Color.Transparent,
-                        selectedIconColor = Rosa,
-                        selectedTextColor = Rosa,
-                        unselectedIconColor = Blanco,
-                        unselectedTextColor = Blanco
-                    ),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                val items = listOf(
+                    NavigationItem("Inicio", "inicio", Icons.Filled.Home, Icons.Outlined.Home),
+                    NavigationItem("Salas", "salas", Icons.Filled.Lock, Icons.Outlined.Lock),
+                    NavigationItem("Gestionar Reservas", "reservas", Icons.Filled.Info, Icons.Outlined.Info),
+                    NavigationItem("Localización", "localizacion", Icons.Filled.LocationOn, Icons.Outlined.LocationOn)
                 )
-                HorizontalDivider(thickness = 1.dp, color = Gris)
+
+                items.forEach { item ->
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = item.title,
+                                fontSize = 16.sp,
+                                fontWeight = if (item.route == selectedItem) FontWeight.Bold else FontWeight.Normal,
+                                color = Blanco
+                            )
+                        },
+                        selected = item.route == selectedItem,
+                        onClick = {
+                            selectedItem = item.route
+                            coroutineScope.launch { drawerState.close() }
+                            navController.navigate(item.route)
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = if (item.route == selectedItem) item.selectedIcon else item.unselectedIcon,
+                                contentDescription = item.title,
+                            )
+                        },
+                        colors = NavigationDrawerItemDefaults.colors(
+                            selectedContainerColor = Rosa.copy(alpha = 0.2f),
+                            unselectedContainerColor = Color.Transparent,
+                            selectedIconColor = Rosa,
+                            selectedTextColor = Rosa,
+                            unselectedIconColor = Blanco,
+                            unselectedTextColor = Blanco
+                        ),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    HorizontalDivider(thickness = 1.dp, color = Gris)
+                }
             }
-        } }
+        }
     ) {
         Scaffold(
-            topBar = { TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Spacer(modifier = Modifier.width(8.dp)) // Espaciado inicial
-                        Text("CYBER", color = Blanco, fontFamily = pressStart2P)
-                        Text("X", color = Rosa, fontWeight = FontWeight.Bold, fontFamily = pressStart2P)
-                        Text("CAPE", color = Blanco, fontFamily = pressStart2P)
-                        IconButton(onClick = { navController.navigate("inicio") }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo),
-                                contentDescription = "Logo",
-                                modifier = Modifier.size(40.dp)
-                            )
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Spacer(Modifier.width(8.dp))
+                            Text("CYBER", color = Blanco, fontFamily = pressStart2P)
+                            Text("X", color = Rosa, fontWeight = FontWeight.Bold, fontFamily = pressStart2P)
+                            Text("CAPE", color = Blanco, fontFamily = pressStart2P)
+                            IconButton(onClick = { navController.navigate("inicio") }) {
+                                Image(painter = painterResource(R.drawable.logo), contentDescription = "Logo", modifier = Modifier.size(40.dp))
+                            }
                         }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        coroutineScope.launch { drawerState.open() }
-                    }) {
-                        Icon(Icons.Default.Menu, contentDescription = "inicio", tint = Blanco)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Negro,
-                    titleContentColor = Blanco
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                            Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = Blanco)
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Negro)
                 )
-            ) },
-            floatingActionButton = { MyFloatingAcbu() },
-            floatingActionButtonPosition = FabPosition.End,
+            },
+
             containerColor = Negro
         ) { innerPadding ->
-
             Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
+                Modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                TextField(
-                    value = uiState.nombre,
-                    onValueChange = viewModel::onNombreChange,
+                // Personal info
+                OutlinedTextField(uiState.nombre, viewModel::onNombreChange,
                     label = { Text("Nombre") },
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                TextField(
-                    value = uiState.apellidos,
-                    onValueChange = viewModel::onApellidosChange,
+                OutlinedTextField(uiState.apellidos, viewModel::onApellidosChange,
                     label = { Text("Apellidos") },
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                TextField(
-                    value = uiState.telefono,
-                    onValueChange = viewModel::onTelefonoChange,
+                OutlinedTextField(uiState.telefono, viewModel::onTelefonoChange,
                     label = { Text("Teléfono") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                TextField(
-                    value = uiState.socio,
-                    onValueChange = viewModel::onSocioChange,
-                    label = { Text("Número Carnet Socio") },
+                OutlinedTextField(uiState.numeroSocio, viewModel::onNumeroSocioChange,
+                    label = { Text("Número de Socio") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                TextField(
-                    value = uiState.email,
-                    onValueChange = viewModel::onEmailChange,
+                OutlinedTextField(uiState.email, viewModel::onEmailChange,
                     label = { Text("Email") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(uiState.numeroJugadores, viewModel::onNumeroJugadoresChange,
+                    label = { Text("Número de Jugadores") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                TextField(
-                    value = uiState.jugadores,
-                    onValueChange = viewModel::onJugadoresChange,
-                    label = { Text("Número de jugadores") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                ExposedDropdownMenuBox(expanded = expandedSala, onExpandedChange = { expandedSala = !expandedSala }) {
-                    TextField(
-                        value = uiState.sala,
+                // Sala dropdown
+                ExposedDropdownMenuBox(expanded = salaExpanded, onExpandedChange = { salaExpanded = !salaExpanded }) {
+                    OutlinedTextField(
+                        value = if (uiState.sala.isEmpty()) "Seleccionar sala" else uiState.sala,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Seleccione Sala") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedSala) },
-                        modifier = Modifier.fillMaxWidth()
+                        label = { Text("Sala") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(salaExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                     )
-                    ExposedDropdownMenu(expanded = expandedSala, onDismissRequest = { expandedSala = false }) {
-                        salas.forEach { sala ->
-                            DropdownMenuItem(
-                                text = { Text(sala) },
-                                onClick = {
-                                    viewModel.onSalaChange(sala)
-                                    expandedSala = false
-                                }
-                            )
+                    ExposedDropdownMenu(expanded = salaExpanded, onDismissRequest = { salaExpanded = false }) {
+                        salaOptions.forEach { option ->
+                            DropdownMenuItem(text = { Text(option) }, onClick = { viewModel.onSalaChange(option); salaExpanded = false })
                         }
                     }
                 }
 
-                ExposedDropdownMenuBox(expanded = expandedDificultad, onExpandedChange = { expandedDificultad = !expandedDificultad }) {
-                    TextField(
-                        value = uiState.dificultad,
+                // Dificultad dropdown
+                ExposedDropdownMenuBox(expanded = difExpanded, onExpandedChange = { difExpanded = !difExpanded }) {
+                    OutlinedTextField(
+                        value = if (uiState.dificultad.isEmpty()) "Seleccionar dificultad" else uiState.dificultad,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Seleccione Dificultad") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDificultad) },
-                        modifier = Modifier.fillMaxWidth()
+                        label = { Text("Dificultad") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(difExpanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                     )
-                    ExposedDropdownMenu(expanded = expandedDificultad, onDismissRequest = { expandedDificultad = false }) {
-                        dificultades.forEach { dif ->
-                            DropdownMenuItem(
-                                text = { Text(dif) },
-                                onClick = {
-                                    viewModel.onDificultadChange(dif)
-                                    expandedDificultad = false
-                                }
-                            )
+                    ExposedDropdownMenu(expanded = difExpanded, onDismissRequest = { difExpanded = false }) {
+                        difOptions.forEach { option ->
+                            DropdownMenuItem(text = { Text(option) }, onClick = { viewModel.onDificultadChange(option); difExpanded = false })
                         }
                     }
                 }
 
-                TextField(
-                    value = uiState.fecha,
+                // Fecha input with calendar
+                OutlinedTextField(
+                    value = SimpleDateFormat("dd/MM/yyyy").format(selectedDate.value),
                     onValueChange = {},
-                    label = { Text("Seleccione Fecha") },
                     readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showDatePicker.value = true }
-                )
-
-                TextField(
-                    value = uiState.hora,
-                    onValueChange = {},
-                    label = { Text("Seleccione Hora") },
-                    readOnly = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { showTimePicker.value = true }
-                )
-
-                TextField(
-                    value = uiState.comentario,
-                    onValueChange = viewModel::onComentarioChange,
-                    label = { Text("Comentario") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                uiState.errorMensaje?.let {
-                    Text(text = it, color = Rojo)
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.validarYEnviar()
+                    label = { Text("Fecha") },
+                    trailingIcon = {
+                        Icon(Icons.Filled.DateRange, contentDescription = "Seleccionar fecha", modifier = Modifier.clickable { datePickerDialog.show() })
                     },
+                    modifier = Modifier.fillMaxWidth().clickable { datePickerDialog.show() }
+
+                )
+
+                // Hora
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(uiState.horaInicio, viewModel::onHoraInicioChange,
+                        label = { Text("Hora Inicio") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(uiState.horaFin, viewModel::onHoraFinChange,
+                        label = { Text("Hora Fin") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                // Comentarios
+                OutlinedTextField(uiState.comentarios, viewModel::onComentariosChange,
+                    label = { Text("Comentarios") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Error
+                uiState.errorMensaje?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+
+                // Enviar
+                Button(
+                    onClick = { viewModel.validarYEnviar() },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Rosa)
-                ) {
-                    Text("Enviar")
-                }
+                ) { Text("Enviar", color= Blanco ) }
 
+                // Email Intent
                 if (uiState.envioExitoso) {
-                    LaunchedEffect(Unit) {
+                    LaunchedEffect(uiState.envioExitoso) {
                         val intent = Intent(Intent.ACTION_SEND).apply {
                             type = "message/rfc822"
                             putExtra(Intent.EXTRA_EMAIL, arrayOf("diazcanoignacio@gmail.com"))
                             putExtra(Intent.EXTRA_SUBJECT, "Formulario de datos")
-                            putExtra(Intent.EXTRA_TEXT, """
+                            putExtra(Intent.EXTRA_TEXT,
+                                """
                                 Nombre: ${uiState.nombre}
                                 Apellidos: ${uiState.apellidos}
                                 Teléfono: ${uiState.telefono}
+                                Número de Socio: ${uiState.numeroSocio}
                                 Email: ${uiState.email}
-                                Nº Carnet de Socio: ${uiState.socio}
-                                Nº Jugadores: ${uiState.jugadores}
+                                Número de Jugadores: ${uiState.numeroJugadores}
                                 Sala: ${uiState.sala}
                                 Dificultad: ${uiState.dificultad}
                                 Fecha: ${uiState.fecha}
-                                Hora: ${uiState.hora}
-                                Comentario: ${uiState.comentario}
-               
-                            """.trimIndent())
+                                Hora Inicio: ${uiState.horaInicio}
+                                Hora Fin: ${uiState.horaFin}
+                                Comentarios: ${uiState.comentarios}
+                                """.trimIndent())
                         }
                         context.startActivity(Intent.createChooser(intent, "Enviar email con..."))
-                        viewModel.onEmailChange("") // Reseteo ejemplo
                     }
-                }
-                if (showDatePicker.value) {
-                    val calendar = Calendar.getInstance()
-                    DatePickerDialog(
-                        context,
-                        { _, year, month, dayOfMonth ->
-                            val fechaSeleccionada = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
-                            viewModel.onFechaChange(fechaSeleccionada)
-                            showDatePicker.value = false
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    ).show()
-                }
-
-                if (showTimePickerStart.value) {
-                    val calendar = Calendar.getInstance()
-                    TimePickerDialog(
-                        context,
-                        { _, hourOfDay, minute ->
-                            val horaSeleccionada = String.format("%02d:%02d", hourOfDay, minute)
-                            viewModel.onHoraInicioChange(horaSeleccionada)
-                            showTimePickerStart.value = false
-                        },
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true
-                    ).show()
-                }
-
-                if (showTimePickerEnd.value) {
-                    val calendar = Calendar.getInstance()
-                    TimePickerDialog(
-                        context,
-                        { _, hourOfDay, minute ->
-                            val horaSeleccionada = String.format("%02d:%02d", hourOfDay, minute)
-                            viewModel.onHoraFinChange(horaSeleccionada)
-                            showTimePickerEnd.value = false
-                        },
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true
-                    ).show()
                 }
             }
         }
