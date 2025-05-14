@@ -1,10 +1,10 @@
 package com.example.cyberxcape
 
-import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.os.Environment
-import android.util.Log
+import android.net.Uri
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -37,12 +37,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.cyberxcape.ui.theme.*
 import kotlinx.coroutines.launch
-import java.io.File
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.style.TextAlign
-import androidx.core.content.FileProvider
 import com.example.cyberxcape.model.Sala
-import java.io.FileOutputStream
+import java.io.IOException
+import java.io.OutputStream
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,7 +137,7 @@ fun PantallaSalas(navController: NavHostController) {
                     )
                 )
             },
-            floatingActionButton = { MyFloatingAcbu() },
+            floatingActionButton = { MyFloatingAcbu(navController = navController) },
             floatingActionButtonPosition = FabPosition.End,
             containerColor = Negro
         ) { innerPadding ->
@@ -173,7 +172,7 @@ fun SalaView() {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(
-                    onClick = { descargarAbrirPDF(context) },
+                    onClick = { guardarYAbrirPdf(context, "salas_info.pdf") },
                     colors = ButtonDefaults.buttonColors(containerColor = Rosa)
                 ) {
                     Text("Descargar PDF", color = Blanco)
@@ -340,48 +339,60 @@ fun getSalas(): List<Sala> {
 
 
 
-@SuppressLint("QueryPermissionsNeeded")
-fun descargarAbrirPDF(context: Context) {
-    val assetManager = context.assets
-    val fileName = "salas_info.pdf"
+fun guardarYAbrirPdf(context: Context, nombreArchivo: String) {
+    // 1. Obtener el ContentResolver para insertar y leer URIs en MediaStore.
+    val resolver = context.contentResolver
 
-    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val outFile = File(downloadsDir, "salas_info.pdf")
+    // 2. Asegurarnos de que el nombre incluya la extensión ".pdf".
+    val nombreArchivoConExtension =
+        if (nombreArchivo.endsWith(".pdf")) nombreArchivo else "$nombreArchivo.pdf"
 
-    try {
-        // Copiar el archivo desde assets solo si aún no existe
-        if (!outFile.exists()) {
-            assetManager.open(fileName).use { inputStream ->
-                FileOutputStream(outFile).use { outputStream ->
-                    inputStream.copyTo(outputStream)
+    // 3. Preparar los valores que describen el archivo en MediaStore.
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Downloads.DISPLAY_NAME, nombreArchivoConExtension)
+        put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+    }
+
+    // 4. Insertar un nuevo registro en MediaStore→Descargas. Obtendremos la URI donde escribir.
+    val uri: Uri? =
+        resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+    if (uri != null) {
+        try {
+            // 5. Abrir un OutputStream hacia la URI y copiar los bytes del asset.
+            resolver.openOutputStream(uri).use { outputStream ->
+                context.assets.open(nombreArchivoConExtension).use { inputStream ->
+                    // Copiamos el contenido del asset al almacenamiento público.
+                    inputStream.copyTo(outputStream as OutputStream)
                 }
             }
+
+            // 6. Notificar al usuario de que el PDF ya está guardado.
+            Toast.makeText(context, "PDF guardado en Descargas", Toast.LENGTH_SHORT).show()
+
+            // 7. Crear un Intent para abrir el PDF recién guardado.
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                // Indicamos la URI y el tipo de contenido
+                setDataAndType(uri, "application/pdf")
+                // Concede permiso de lectura temporal a la app que abra el PDF
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                // Si se invoca desde un contexto no-Activity, crea una nueva tarea
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            // 8. Lanzar el Intent; el sistema elegirá la app adecuada.
+            context.startActivity(intent)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(
+                context,
+                "Error al guardar o abrir el PDF",
+                Toast.LENGTH_SHORT
+            ).show()
         }
-
-        // Obtener URI segura
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.provider",
-            outFile
-        )
-
-        // Intent para abrir el PDF
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addCategory(Intent.CATEGORY_DEFAULT)
-        }
-
-
-        context.startActivity(Intent.createChooser(intent, "Abrir con..."))
-        Toast.makeText(context, "PDF descargado y abierto", Toast.LENGTH_SHORT).show()
-
-    } catch (e: Exception) {
-        e.printStackTrace()
-        Toast.makeText(context, "Error al descargar o abrir el PDF", Toast.LENGTH_SHORT).show()
-        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-        Log.e("PDF_ERROR", "Error al abrir PDF", e)
+    } else {
+        Toast.makeText(context, "No se pudo crear el archivo", Toast.LENGTH_SHORT).show()
     }
 }
 

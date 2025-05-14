@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.CameraPosition
 import android.content.Intent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.net.toUri
@@ -171,14 +173,14 @@ fun PantallaLocalizacion(navController: NavHostController) {
 
                 // Teléfonos
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
-                    Icon(Icons.Default.Info, contentDescription = "Teléfono", tint = Rosa)
+                    Icon(Icons.Default.Call, contentDescription = "Teléfono", tint = Rosa)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("657 88 30 89 / 956 12 23 44", color = Blanco)
                 }
 
                 // Email
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
-                    Icon(Icons.Default.Info, contentDescription = "Email", tint = Rosa)
+                    Icon(Icons.Default.Email, contentDescription = "Email", tint = Rosa)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("CyberXcape@gmail.com", color = Blanco)
                 }
