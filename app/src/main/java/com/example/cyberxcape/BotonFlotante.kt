@@ -3,6 +3,7 @@ package com.example.cyberxcape
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -20,7 +21,7 @@ fun MyFloatingAcbu(modifier: Modifier = Modifier){
         modifier = modifier) // Aquí se pasa el modificador
     {
 
-        Icon(imageVector = Icons.Filled.Email, contentDescription = "email")
+        Icon(imageVector = Icons.Filled.Add, contentDescription = "reservar")
     }
 }
 

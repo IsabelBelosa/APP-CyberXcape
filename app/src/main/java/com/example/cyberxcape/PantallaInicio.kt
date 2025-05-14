@@ -62,7 +62,7 @@ fun PantallaInicio(navController: NavHostController) {
                 .width(250.dp), // Ancho del menú
                 drawerContainerColor = Negro
             ){
-                Spacer(modifier = Modifier.height(16.dp)) // Espaciado superior
+                Spacer(modifier = Modifier.height(16.dp)) // Espaciado superior para el menú
 
 
                 // Opciones del menú organizadas en objetos de navegación
@@ -162,10 +162,10 @@ fun PantallaInicio(navController: NavHostController) {
                     )
                 )
             },
-            floatingActionButton = { MyFloatingAcbu() },
-            floatingActionButtonPosition = FabPosition.End,
             containerColor = Negro
-        ) { paddingValues ->
+        )
+
+        { paddingValues ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()

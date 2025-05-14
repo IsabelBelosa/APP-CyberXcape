@@ -12,6 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CyberXcape"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.cyberxcape.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAP40ylItYb1GdO0SiAztjwAh7HFUpyCiY" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
