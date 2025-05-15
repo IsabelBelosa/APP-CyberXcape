@@ -1,4 +1,4 @@
-package com.example.cyberxcape
+package com.example.cyberxcape.componentes
 
 
 import androidx.compose.foundation.shape.CircleShape

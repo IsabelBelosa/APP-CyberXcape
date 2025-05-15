@@ -1,4 +1,4 @@
-package com.example.cyberxcape
+package com.example.cyberxcape.screens
 
 import android.content.ContentValues
 import android.content.Context
@@ -13,21 +13,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,9 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.cyberxcape.ui.theme.*
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.style.TextAlign
+import com.example.cyberxcape.componentes.MainLayout
+import com.example.cyberxcape.R
 import com.example.cyberxcape.model.Sala
 import java.io.IOException
 import java.io.OutputStream
@@ -47,110 +36,22 @@ import java.io.OutputStream
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaSalas(navController: NavHostController) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val coroutinescope = rememberCoroutineScope()
     var selectedItem by remember { mutableStateOf("salas") }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet(
-                Modifier
-                    .fillMaxHeight()
-                    .width(250.dp),
-                drawerContainerColor = Negro
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                val items = listOf(
-                    NavigationItem("Inicio", "inicio", Icons.Filled.Home, Icons.Outlined.Home),
-                    NavigationItem("Salas", "salas", Icons.Filled.Lock, Icons.Outlined.Lock),
-                    NavigationItem("Gestionar Reservas", "reservas", Icons.Filled.Info, Icons.Outlined.Info),
-                    NavigationItem("Localización", "localizacion", Icons.Filled.LocationOn, Icons.Outlined.LocationOn)
-                )
-
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        label = {
-                            Text(
-                                text = item.title,
-                                fontSize = 16.sp,
-                                fontWeight = if (item.route == selectedItem) FontWeight.Bold else FontWeight.Normal,
-                                color = Blanco
-                            )
-                        },
-                        selected = item.route == selectedItem,
-                        onClick = {
-                            selectedItem = item.route
-                            coroutinescope.launch { drawerState.close() }
-                            navController.navigate(item.route)
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = if (item.route == selectedItem) item.selectedIcon else item.unselectedIcon,
-                                contentDescription = item.title,
-                            )
-                        },
-                        colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = Rosa.copy(alpha = 0.2f),
-                            unselectedContainerColor = Color.Transparent,
-                            selectedIconColor = Rosa,
-                            selectedTextColor = Rosa,
-                            unselectedIconColor = Blanco,
-                            unselectedTextColor = Blanco
-                        ),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                    HorizontalDivider(thickness = 1.dp, color = Gris)
-                }
-            }
-        }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("CYBER", color = Blanco, fontFamily = pressStart2P)
-                            Text("X", color = Rosa, fontWeight = FontWeight.Bold, fontFamily = pressStart2P)
-                            Text("CAPE", color = Blanco, fontFamily = pressStart2P)
-                            IconButton(onClick = { navController.navigate("inicio") }) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.logo),
-                                    contentDescription = "Logo",
-                                    modifier = Modifier.size(40.dp)
-                                )
-                            }
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            coroutinescope.launch { drawerState.open() }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Blanco)
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Negro,
-                        titleContentColor = Blanco
-                    )
-                )
-            },
-            floatingActionButton = { MyFloatingAcbu(navController = navController) },
-            floatingActionButtonPosition = FabPosition.End,
-            containerColor = Negro
-        ) { innerPadding ->
-            //Esto es para realizar la vista de las salas como una columna
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .background(Negro)
-            ) {
-                SalaView()
-            }
+    MainLayout(
+        navController = navController,
+        selectedItem = selectedItem,
+        onItemSelected = { selectedItem = it }
+    ) { innerPadding ->
+        //Esto es para realizar la vista de las salas como una columna
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(16.dp)
+                .background(Negro)
+        ) {
+            SalaView()
         }
     }
 }

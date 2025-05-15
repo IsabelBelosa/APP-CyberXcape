@@ -1,5 +1,5 @@
 // MainActivity.kt
-package com.example.cyberxcape
+package com.example.cyberxcape.componentes
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

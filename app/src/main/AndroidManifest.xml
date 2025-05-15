@@ -28,7 +28,7 @@
             android:value="AIzaSyAP40ylItYb1GdO0SiAztjwAh7HFUpyCiY" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".componentes.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.CyberXcape">
