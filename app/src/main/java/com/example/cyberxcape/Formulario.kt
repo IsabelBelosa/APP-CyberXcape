@@ -3,6 +3,7 @@ package com.example.cyberxcape
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -24,6 +25,9 @@ import java.util.*
 import androidx.compose.ui.text.input.KeyboardType
 import java.text.SimpleDateFormat
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.TextStyle
 import com.example.cyberxcape.componentes.MainLayout
 
 
@@ -36,7 +40,7 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
     var selectedItem by remember { mutableStateOf("reservas") }
 
 
-    // Dropdown states
+    // Dificultad  y sala dropdown states
     var salaExpanded by remember { mutableStateOf(false) }
     var difExpanded by remember { mutableStateOf(false) }
     val salaOptions = listOf("Neutral Hack", "Estación Omega", "Experimento-33")
@@ -67,7 +71,7 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Personal info
+            // Informacion del formulario
             OutlinedTextField(
                 uiState.nombre, viewModel::onNombreChange,
                 label = { Text("Nombre") },
@@ -75,8 +79,10 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
-                    cursorColor = Rosa
-                )
+                    cursorColor = Rosa,
+
+                    ),
+                textStyle = TextStyle(color = Blanco)
             )
             OutlinedTextField(
                 uiState.apellidos, viewModel::onApellidosChange,
@@ -86,7 +92,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
             OutlinedTextField(
                 uiState.telefono, viewModel::onTelefonoChange,
@@ -97,7 +104,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
             OutlinedTextField(
                 uiState.numeroSocio, viewModel::onNumeroSocioChange,
@@ -108,7 +116,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
             OutlinedTextField(
                 uiState.email, viewModel::onEmailChange,
@@ -119,7 +128,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
             OutlinedTextField(
                 uiState.numeroJugadores, viewModel::onNumeroJugadoresChange,
@@ -130,8 +140,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
-
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
 
             // Sala dropdown
@@ -151,7 +161,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
                         cursorColor = Rosa
-                    )
+                    ),
+                    textStyle = TextStyle(color = Blanco)
                 )
                 ExposedDropdownMenu(
                     expanded = salaExpanded,
@@ -181,7 +192,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
                         cursorColor = Rosa
-                    )
+                    ),
+                    textStyle = TextStyle(color = Blanco)
                 )
                 ExposedDropdownMenu(
                     expanded = difExpanded,
@@ -213,7 +225,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
 
             // Hora
@@ -227,7 +240,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
                         cursorColor = Rosa
-                    )
+                    ),
+                    textStyle = TextStyle(color = Blanco)
                 )
                 OutlinedTextField(
                     uiState.horaFin, viewModel::onHoraFinChange,
@@ -238,7 +252,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
                         cursorColor = Rosa
-                    )
+                    ),
+                    textStyle = TextStyle(color = Blanco)
                 )
             }
 
@@ -251,7 +266,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa
-                )
+                ),
+                textStyle = TextStyle(color = Blanco)
             )
 
             // Error
@@ -264,34 +280,50 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 colors = ButtonDefaults.buttonColors(containerColor = Rosa)
             ) { Text("Enviar", color = Blanco) }
 
-            // Email Intent
+            // Email Intent y Toast de éxito
             if (uiState.envioExitoso) {
-                LaunchedEffect(uiState.envioExitoso) {
+                LaunchedEffect(uiState.envioExitoso) { // Se ejecutará cuando envioExitoso cambie a true
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "message/rfc822"
-                        putExtra(Intent.EXTRA_EMAIL, arrayOf("diazcanoignacio@gmail.com"))
-                        putExtra(Intent.EXTRA_SUBJECT, "Formulario de datos")
+                        putExtra(Intent.EXTRA_EMAIL, arrayOf("diazcanoignacio@gmail.com")) // Cambia si es necesario
+                        putExtra(Intent.EXTRA_SUBJECT, "Nueva Reserva CyberXcape: ${uiState.nombre}")
                         putExtra(
                             Intent.EXTRA_TEXT,
                             """
                             Nombre: ${uiState.nombre}
                             Apellidos: ${uiState.apellidos}
                             Teléfono: ${uiState.telefono}
-                            Número de Socio: ${uiState.numeroSocio}
+                            Número de Socio: ${uiState.numeroSocio ?: "No proporcionado"}
                             Email: ${uiState.email}
                             Número de Jugadores: ${uiState.numeroJugadores}
                             Sala: ${uiState.sala}
                             Dificultad: ${uiState.dificultad}
-                            Fecha: ${uiState.fecha}
+                            Fecha: ${SimpleDateFormat("dd/MM/yyyy").format(uiState.fecha)}
                             Hora Inicio: ${uiState.horaInicio}
                             Hora Fin: ${uiState.horaFin}
-                            Comentarios: ${uiState.comentarios}
+                            Comentarios: ${uiState.comentarios.ifEmpty { "Ninguno" }}
                             """.trimIndent()
                         )
                     }
-                    context.startActivity(Intent.createChooser(intent, "Enviar email con..."))
+                    Toast.makeText(context, "¡Reserva realizada y datos enviados!", Toast.LENGTH_LONG).show()
+
+                    try {
+                        context.startActivity(Intent.createChooser(intent, "Enviar email de confirmación con..."))
+                    } catch (e: android.content.ActivityNotFoundException) {
+                        Toast.makeText(context, "No hay aplicación de email instalada.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
+
+            // Navegación después del envío exitoso
+            if (uiState.envioExitoso) {
+                LaunchedEffect(Unit) {
+                    navController.navigate("reservas") {
+                        popUpTo("formulario") { inclusive = true }
+                    }
+                }
+            }
+
         }
     }
 }

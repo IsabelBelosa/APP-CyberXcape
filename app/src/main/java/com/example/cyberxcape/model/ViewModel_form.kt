@@ -20,3 +20,23 @@ data class ViewModel_form(
     val salaExpanded: Boolean = false, // Nueva propiedad
     val dificultadExpanded: Boolean = false // Nueva propiedad
 )
+
+fun ViewModel_form.toReservaFormulario(): ReservaFormulario {
+    return ReservaFormulario(
+        nombre = nombre,
+        apellidos = apellidos,
+        telefono = telefono,
+        numeroSocio = numeroSocio,
+        email = email,
+        numeroJugadores = numeroJugadores.toIntOrNull() ?: 0,
+        sala = sala,
+        dificultad = dificultad,
+        fecha = fecha,
+        horaInicio = horaInicio,
+        horaFin = horaFin,
+        comentarios = comentarios
+    )
+}
+
+
+

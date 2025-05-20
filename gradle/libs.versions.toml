@@ -11,8 +11,11 @@ composeBom = "2024.09.00"
 navigation = "2.7.5"
 serialization = "1.8.0"
 playServicesMaps = "19.2.0"
+glance = "1.0.0"
 
 [libraries]
+glance-material3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
+glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

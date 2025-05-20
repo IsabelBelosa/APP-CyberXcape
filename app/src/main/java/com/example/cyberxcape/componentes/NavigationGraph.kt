@@ -11,6 +11,11 @@ import com.example.cyberxcape.screens.PantallaGestionarReservas
 import com.example.cyberxcape.screens.PantallaInicio
 import com.example.cyberxcape.screens.PantallaLocalizacion
 import com.example.cyberxcape.screens.PantallaSalas
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
+import com.example.cyberxcape.screens.VerInfo
+import com.example.cyberxcape.screens.ModificarInfo
+
 
 
 @Composable
@@ -24,6 +29,23 @@ fun NavigationGraph(navController: NavHostController) {
             Formulario(viewModel = viewModel, navController) // Pasar el ViewModel a Formulario
         }
         composable("localizacion") { PantallaLocalizacion(navController) }
+        composable(
+            route = "verInfo/{reservaId}",
+            arguments = listOf(navArgument("reservaId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val reservaId = backStackEntry.arguments?.getString("reservaId") ?: ""
+            VerInfo(reservaId = reservaId, navController = navController)
+        }
+        composable(
+            route = "modificarInfo/{reservaId}",
+            arguments = listOf(navArgument("reservaId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val reservaId = backStackEntry.arguments?.getString("reservaId") ?: ""
+            ModificarInfo(reservaId, navController)
+        }
+
+
+
     }
 }
 

@@ -1,10 +1,17 @@
 package com.example.cyberxcape.model
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.cyberxcape.network.ApiService
+import com.example.cyberxcape.network.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 import java.util.*
+
 
 class ViewModel_class : ViewModel() {
 
@@ -59,7 +66,6 @@ class ViewModel_class : ViewModel() {
         _uiState.update { it.copy(comentarios = comentarios) }
     }
 
-    // Funciones para actualizar la expansión de los dropdowns
     fun onSalaChange(expanded: Boolean) {
         _uiState.update { it.copy(salaExpanded = expanded) }
     }
@@ -83,13 +89,35 @@ class ViewModel_class : ViewModel() {
         else if (state.horaInicio.isBlank()) setError("La hora de inicio es obligatoria")
         else if (state.horaFin.isBlank()) setError("La hora de fin es obligatoria")
         else {
-            _uiState.update {
-                it.copy(errorMensaje = null, envioExitoso = true)
+            enviarReservaMongo()
+        }
+    }
+
+    private fun enviarReservaMongo() {
+        val reserva = _uiState.value.toReservaFormulario()
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.crearReserva(reserva)
+                if (response.isSuccessful) {
+                    _uiState.update { it.copy(errorMensaje = null, envioExitoso = true) }
+                } else {
+                    setError("Error del servidor: ${response.code()}")
+                }
+            } catch (e: IOException) {
+                setError("Error de red: ${e.localizedMessage}")
+            } catch (e: HttpException) {
+                setError("Error HTTP: ${e.message()}")
             }
         }
     }
+
 
     private fun setError(mensaje: String) {
         _uiState.update { it.copy(errorMensaje = mensaje, envioExitoso = false) }
     }
 }
+
+
+
+
