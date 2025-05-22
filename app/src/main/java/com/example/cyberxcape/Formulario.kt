@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextStyle
 import com.example.cyberxcape.componentes.MainLayout
 
-
 @SuppressLint("DefaultLocale", "SimpleDateFormat")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +38,6 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var selectedItem by remember { mutableStateOf("reservas") }
-
 
     // Dificultad  y sala dropdown states
     var salaExpanded by remember { mutableStateOf(false) }
@@ -75,19 +74,22 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
             OutlinedTextField(
                 uiState.nombre, viewModel::onNombreChange,
                 label = { Text("Nombre") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputNombre"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
                     cursorColor = Rosa,
-
-                    ),
+                ),
                 textStyle = TextStyle(color = Blanco)
             )
             OutlinedTextField(
                 uiState.apellidos, viewModel::onApellidosChange,
                 label = { Text("Apellidos") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputApellidos"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -99,7 +101,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 uiState.telefono, viewModel::onTelefonoChange,
                 label = { Text("Teléfono") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputTelefono"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -111,7 +115,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 uiState.numeroSocio, viewModel::onNumeroSocioChange,
                 label = { Text("Número de Socio") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputNumeroSocio"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -123,7 +129,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 uiState.email, viewModel::onEmailChange,
                 label = { Text("Email") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputEmail"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -135,7 +143,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                 uiState.numeroJugadores, viewModel::onNumeroJugadoresChange,
                 label = { Text("Número de Jugadores") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputNumeroJugadores"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -156,7 +166,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(salaExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(),
+                        .menuAnchor()
+                        .testTag("dropdownSala"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
@@ -170,7 +181,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     salaOptions.forEach { option ->
                         DropdownMenuItem(
                             text = { Text(option) },
-                            onClick = { viewModel.onSalaChange(option); salaExpanded = false })
+                            onClick = { viewModel.onSalaChange(option); salaExpanded = false }
+                        )
                     }
                 }
             }
@@ -187,7 +199,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(difExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(),
+                        .menuAnchor()
+                        .testTag("dropdownDificultad"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
@@ -201,7 +214,8 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     difOptions.forEach { option ->
                         DropdownMenuItem(
                             text = { Text(option) },
-                            onClick = { viewModel.onDificultadChange(option); difExpanded = false })
+                            onClick = { viewModel.onDificultadChange(option); difExpanded = false }
+                        )
                     }
                 }
             }
@@ -216,11 +230,13 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     Icon(
                         Icons.Filled.DateRange,
                         contentDescription = "Seleccionar fecha",
-                        modifier = Modifier.clickable { datePickerDialog.show() })
+                        modifier = Modifier.clickable { datePickerDialog.show() }
+                    )
                 },
-                modifier = Modifier.fillMaxWidth().clickable {
-                    datePickerDialog.show()
-                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { datePickerDialog.show() }
+                    .testTag("inputFecha"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -235,7 +251,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     uiState.horaInicio, viewModel::onHoraInicioChange,
                     label = { Text("Hora Inicio") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("inputHoraInicio"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
@@ -247,7 +265,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
                     uiState.horaFin, viewModel::onHoraFinChange,
                     label = { Text("Hora Fin") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("inputHoraFin"),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Rosa,
                         focusedLabelColor = Rosa,
@@ -261,7 +281,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
             OutlinedTextField(
                 uiState.comentarios, viewModel::onComentariosChange,
                 label = { Text("Comentarios") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("inputComentarios"),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Rosa,
                     focusedLabelColor = Rosa,
@@ -276,7 +298,9 @@ fun Formulario(viewModel: ViewModel_class = viewModel(), navController: NavHostC
             // Enviar
             Button(
                 onClick = { viewModel.validarYEnviar() },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("botonEnviar"),
                 colors = ButtonDefaults.buttonColors(containerColor = Rosa)
             ) { Text("Enviar", color = Blanco) }
 
