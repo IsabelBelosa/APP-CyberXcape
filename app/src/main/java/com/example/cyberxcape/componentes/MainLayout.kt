@@ -29,9 +29,17 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import com.example.cyberxcape.R
-import com.example.cyberxcape.screens.NavigationItem
 
+
+data class NavigationItem(
+    val title: String,
+    val route: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +109,9 @@ fun MainLayout(
                             unselectedIconColor = Blanco,
                             unselectedTextColor = Blanco
                         ),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .testTag("drawerItem_${item.route}") // TAG por ruta
                     )
 
                     HorizontalDivider(thickness = 1.dp, color = Gris)
@@ -118,19 +128,26 @@ fun MainLayout(
                             Text("CYBER", color = Blanco, fontFamily = pressStart2P)
                             Text("X", color = Rosa, fontWeight = FontWeight.Bold, fontFamily = pressStart2P)
                             Text("CAPE", color = Blanco, fontFamily = pressStart2P)
-                            IconButton(onClick = { navController.navigate("inicio") }) {
+                            IconButton(
+                                onClick = { navController.navigate("inicio") }
+                            ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.logo),
                                     contentDescription = "Logo",
-                                    modifier = Modifier.size(40.dp)
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .testTag("logoImg") // TAG para el logo
                                 )
                             }
                         }
                     },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            coroutineScope.launch { drawerState.open() }
-                        }) {
+                        IconButton(
+                            onClick = {
+                                coroutineScope.launch { drawerState.open() }
+                            },
+                            modifier = Modifier.testTag("menuButton") // TAG para el botón de menú
+                        ) {
                             Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Blanco)
                         }
                     },

@@ -331,7 +331,7 @@ fun ModificarInfo(
 
                     },
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    colors = ButtonDefaults.buttonColors(containerColor = Rojo)
                 ) {
                     Text("Eliminar", color = Blanco)
                 }

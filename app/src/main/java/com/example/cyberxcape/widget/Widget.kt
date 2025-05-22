@@ -75,7 +75,7 @@ fun CoworkingWidgetContent(reservas: List<ReservaResumen>) {
                 modifier = GlanceModifier.size(40.dp)
             )
             androidx.glance.text.Text(
-                text = "Mis Reservas API",
+                text = "Mis Reservas",
                 style = GlanceTextStyle(
                     color = ColorProvider(colorTitulo),
                     fontWeight = GlanceFontWeight.Bold,
@@ -112,6 +112,14 @@ fun CoworkingWidgetContent(reservas: List<ReservaResumen>) {
                                 color = ColorProvider(colorTextoPrincipal),
                                 fontWeight = GlanceFontWeight.Bold, // Usando GlanceFontWeight
                                 fontSize = 16.sp
+                            ),
+                            maxLines = 1
+                        )
+                        androidx.glance.text.Text(
+                            text = "Usuario: ${reserva.nombre}",
+                            style = GlanceTextStyle(
+                                color = ColorProvider(colorTextoSecundario),
+                                fontSize = 14.sp
                             ),
                             maxLines = 1
                         )

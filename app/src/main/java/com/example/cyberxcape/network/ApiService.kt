@@ -30,8 +30,10 @@ interface ApiService {
 }
 
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.1.25:3000/"
+    private const val BASE_URL = "http://10.0.2.2:3000/"
 // Si se hace con emulador cambiar a 10.0.2.2
+// Si se hace con un dispositivo real cambiar a la IPv4 local de la computadora
+// realizando el comando ipconfig en la terminal.
     val apiService: ApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

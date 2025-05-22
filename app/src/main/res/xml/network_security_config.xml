@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">192.168.1.25</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
         <!-- Si se hace con emulador cambiar a 10.0.2.2 -->
+        <!-- Si se hace con dispositivo real cambiar a la que
+        nos aparezca en el cmd IPv4 con el comando ipconfig -->
     </domain-config>
 </network-security-config>

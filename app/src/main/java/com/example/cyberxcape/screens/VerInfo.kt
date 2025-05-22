@@ -94,7 +94,7 @@ fun VerInfo(
                     modifier = Modifier.weight(1f)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Actualizar reserva", color = Blanco,textAlign =TextAlign.Center)
+                        Text("Actualizar", color = Blanco,textAlign =TextAlign.Center)
                 }}
 
                 Button(
@@ -107,10 +107,10 @@ fun VerInfo(
                             navController.popBackStack()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    colors = ButtonDefaults.buttonColors(containerColor = Rojo),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Eliminar reserva", color = Blanco)
+                    Text("Eliminar", color = Blanco)
                 }
             }
 

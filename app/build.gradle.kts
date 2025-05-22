@@ -16,8 +16,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -42,6 +40,13 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        animationsDisabled = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.6.0"
+    }
 }
 
 
@@ -59,10 +64,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-    implementation("com.google.android.gms:play-services-maps:18.1.0")
-    implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation(libs.play.services.maps.v1810)
+    implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
-    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation (libs.material3)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -72,9 +77,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation(libs.androidx.material3.v121)
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.test.manifest)
+    testImplementation(kotlin("test"))
 
 }

@@ -18,18 +18,12 @@ import com.example.cyberxcape.ui.theme.Blanco
 import com.example.cyberxcape.ui.theme.Rosa
 import com.example.cyberxcape.ui.theme.pressStart2P
 import androidx.navigation.NavHostController
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import com.example.cyberxcape.componentes.MainLayout
 import com.example.cyberxcape.R
 
 
-data class NavigationItem(
-    val title: String,
-    val route: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
